@@ -1,0 +1,42 @@
+{
+    "name": "softchef-utility",
+    "main": "dists/index.js",
+    "version": "1.0.1",
+    "description": "",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/SoftChef/softchef-utility.git"
+    },
+    "author": "SoftChef",
+    "license": "SoftChef",
+    "bugs": {
+        "url": "https://github.com/SoftChef/softchef-utility/issues"
+    },
+    "homepage": "https://github.com/SoftChef/softchef-utility#readme",
+    "scripts": {
+        "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+        "test": "mocha tests/unit"
+    },
+    "dependencies": {
+        "@hapi/joi": "^15.1.0",
+        "semver": "^6.3.0"
+    },
+    "devDependencies": {
+        "sinon": "^7.3.2",
+        "chai": "^4.1.2",
+        "mocha": "^5.1.1",
+        "@babel/core": "^7.4.5",
+        "babel-loader": "^8.0.6",
+        "cross-env": "^5.2.0",
+        "eslint": "^5.16.0",
+        "eslint-config-standard": "^12.0.0",
+        "eslint-loader": "^2.1.2",
+        "eslint-plugin-import": "^2.17.2",
+        "eslint-plugin-node": "^9.0.1",
+        "eslint-plugin-promise": "^4.1.1",
+        "eslint-plugin-standard": "^4.0.0",
+        "webpack": "^4.32.1",
+        "webpack-cli": "^3.3.2",
+        "webpack-node-externals": "^1.7.2"
+    }
+}
