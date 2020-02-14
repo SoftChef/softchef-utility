@@ -21,7 +21,9 @@ fs.listFiles = (targetPath) => {
         for (const fileName of files) {
             const filePath = `${targetPath}/${fileName}`
             if (fs.lstatSync(filePath).isDirectory()) {
-                continue
+                result.push(
+                    ...fs.listFiles(filePath)
+                )
             }
             let extname = path.extname(fileName).replace('.', '')
             let contentType = allowExtensions[extname] || null
