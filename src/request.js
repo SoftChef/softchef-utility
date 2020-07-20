@@ -1,14 +1,25 @@
 'use strict'
 
+const Busboy = require('busboy')
 const Joi = require('./validator')
 
 class Request {
     constructor(event) {
         this.event = event || {}
+        this.headers = this.event.headers || {}
+        this.isMultipartFormData = /^multipart\/form-data.*$/.test(this.headers['Content-Type'] || this.headers['content-type'])
         this.parameters = this.event.pathParameters || {}
         this.query = this.event.queryStringParameters || {}
+        this.body = {}
+        this.files = {}
         try {
-            if (typeof this.event.body === 'string') {
+            if (this.isMultipartFormData) {
+                this.busboy = new Busboy({
+                headers: {
+                    'content-type': this.headers['Content-Type'] || this.headers['content-type']
+                }
+                })
+            } else if (typeof this.event.body === 'string') {
                 this.body = JSON.parse(this.event.body) || {}
             } else if (typeof this.event.body === 'object') {
                 this.body = this.event.body || {}
@@ -59,6 +70,12 @@ class Request {
         }
         return false
     }
+    async file(key) {
+        if (!this.busboy._finished) {
+            await this._processFiles()
+        }
+        return Promise.resolve(this.files[key].binary || null)
+    }
     headers() {
         return this.event.headers
     }
@@ -106,6 +123,41 @@ class Request {
             error: false
         }
     }
+    _processFiles() {
+        return new Promise((resolve, reject) => {
+          try {
+            this.busboy.on('field', (fieldName, value, fieldNameTruncated, valTruncated) => {
+              this.body[fieldName] = value
+            })
+            this.busboy.on('file', (fieldName, file, filename, encoding, mimeType) => {
+              if (!this.files[fieldName]) {
+                this.files[fieldName] = {
+                  binary: Buffer.from(''),
+                  filename,
+                  encoding,
+                  mimeType
+                }
+              }
+              file.on('data', (data) => {
+                this.files[fieldName].binary += data
+              })
+              file.on('end', () => {})
+            })
+            this.busboy.on('error', error => {
+              return reject(
+                new Error(`Parse error: ${error}`)
+              )
+            })
+            this.busboy.on('finish', () => {
+              resolve(true)
+            })
+            this.busboy.write(this.event.body, this.event.isBase64Encoded ? 'base64' : 'binary')
+            this.busboy.end()
+          } catch (error) {
+            reject(error)
+          }
+        })
+      }
 }
 
 module.exports = Request

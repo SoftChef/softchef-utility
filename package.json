@@ -1,7 +1,7 @@
 {
     "name": "softchef-utility",
     "main": "dists/index.js",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "description": "",
     "repository": {
         "type": "git",
@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "@hapi/joi": "^15.1.0",
+        "busboy": "^0.3.1",
         "semver": "^6.3.0"
     },
     "devDependencies": {
