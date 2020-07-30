@@ -3,54 +3,46 @@
 const Joi = require('@hapi/joi')
 const semver = require('semver')
 
-const allowAwsRegion = [
+const ALLOW_AWS_REGIONS = [
   'ap-northeast-1',
   'ap-southeast-1'
 ]
 
 module.exports = Joi
-  .extend(joi => ({
-    base: joi.string(),
-    name: 'string',
-    language: {
-      awsRegion: `isn't allow AWS region`
-    },
-    rules: [
-      {
-        name: 'awsRegion',
-        validate(parameters, value, state, options) {
-          if (allowAwsRegion.indexOf(value) > -1) {
-            return value
-          } else {
-            return this.createError('string.awsRegion', {
-              v: value, q: parameters.q
-            }, state, options)
+  .extend(joi => {
+    return {
+      type: 'awsRegion',
+      base: joi.string(),
+      messages: {
+        'awsRegion.base': `isn't allow AWS region`
+      },
+      validate(value, helpers) {
+        if (ALLOW_AWS_REGIONS.indexOf(value) === -1) {
+          return {
+            value,
+            errors: helpers.error('awsRegion.base')
           }
         }
       }
-    ]
-  }))
-  .extend(joi => ({
-    base: joi.string(),
-    name: 'string',
-    language: {
-      semanticVersion: `isn't semantic version format`
-    },
-    rules: [
-      {
-        name: 'semanticVersion',
-        validate(parameters, value, state, options) {
-          if (semver.valid(value)) {
-            return value
-          } else {
-            return this.createError('string.semanticVersion', {
-              v: value, q: parameters.q
-            }, state, options)
+    }
+  })
+  .extend(joi => {
+    return {
+      type: 'semanticVersion',
+      base: joi.string(),
+      messages: {
+        'semanticVersion.base': `isn't semantic version format`
+      },
+      validate(value, helpers) {
+        if (!semver.valid(value)) {
+          return {
+            value,
+            errors: helpers.error('semanticVersion.base')
           }
         }
       }
-    ]
-  }))
+    }
+  })
 
 // You can extend Joi after extend()
 // example: Joi.extend(...).extend(...).extend(...)

@@ -60,4 +60,72 @@ describe('Test Request class', () => {
     expect(request.has('xxx')).to.equal(false)
     done()
   })
+
+  it('Verifies request validate success', (done) => {
+    const expectedData = {
+      name: 'John',
+      description: 'This is a John'
+    }
+    const request = new Request({
+      body: JSON.stringify(expectedData)
+    })
+    const validated = request.validate(joi => {
+      return {
+        name: joi.string().required(),
+        description: joi.string().required()
+      }
+    })
+    expect(validated.error).to.equal(false)
+    done()
+  })
+
+  it('Verifies request validate failure', (done) => {
+    const request = new Request()
+    const validated = request.validate(joi => {
+      return {
+        name: joi.string().required(),
+        description: joi.string().required()
+      }
+    })
+    expect(validated.error).to.equal(true)
+    expect(validated.messages).to.be.an('object')
+    expect(validated.messages.name).to.be.an('string')
+    expect(validated.messages.description).to.be.an('string')
+    done()
+  })
+
+  it('Verifies request validateAsync success', async() => {
+    const expectedData = {
+      name: 'John',
+      description: 'This is a John'
+    }
+    const request = new Request({
+      body: JSON.stringify(expectedData)
+    })
+    try {
+      const validated = await request.validateAsync(joi => {
+        return {
+          name: joi.string().required(),
+          description: joi.string().required()
+        }
+      })
+      expect(validated.name).to.equal(expectedData.name)
+      expect(validated.description).to.equal(expectedData.description)
+    } catch (error) {}
+  })
+
+  it('Verifies request validateAsync failure', async() => {
+    const request = new Request()
+    try {
+      await request.validateAsync(joi => {
+        return {
+          name: joi.string().required(),
+          description: joi.string().required()
+        }
+      })
+    } catch (error) {
+      expect(error.name).to.be.an('string')
+      expect(error.description).to.be.an('string')
+    }
+  })
 })

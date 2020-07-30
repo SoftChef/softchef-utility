@@ -129,6 +129,29 @@ class Request {
     }
   }
 
+  async validateAsync(keysProvider, options = {}) {
+    try {
+      const keys = keysProvider(Joi)
+      const schema = Joi.object().keys(keys)
+      const validated = await schema.validateAsync(
+        this.inputs(
+            Object.keys(keys)
+        ),
+        {
+          abortEarly: false,
+          ...options
+        }
+      )
+      return Promise.resolve(validated)
+    } catch (error) {
+      const errors = {}
+      for (const detail of error.details) {
+        errors[detail.context.key] = detail.message
+      }
+      return Promise.reject(errors)
+    }
+  }
+
   _processFiles() {
     return new Promise((resolve, reject) => {
       try {
