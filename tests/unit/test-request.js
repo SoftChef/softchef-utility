@@ -2,6 +2,7 @@
 
 const { expect } = require('chai')
 const { Request } = require('../../src')
+const { range, shuffle } = require('lodash')
 
 describe('Test Request class', () => {
   it('Verifies request get parameter', (done) => {
@@ -36,16 +37,26 @@ describe('Test Request class', () => {
 
   it('Verifies request get file', async() => {
     const boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
-    const filename = 'image'
-    const expectedContent = Buffer.from('ABCDEFG')
+    const filename = 'file'
+    const expectedContent = Buffer.from(
+      shuffle(
+        range(0, 255)
+      )
+    )
+    const body = Buffer.concat([
+      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="${filename}"; filename="test.txt"\r\nContent-Type: "application/protobuf"\r\n\r\n`),
+      expectedContent,
+      Buffer.from(`\r\n--${boundary}--`)
+    ]).toString('base64')
     const request = new Request({
       headers: {
         'content-type': `multipart/form-data; boundary=${boundary}`
       },
-      body: `--${boundary}\r\nContent-Disposition: form-data; name="${filename}"; filename="test.txt"\r\nContent-Type: "{Insert_File_Content_Type}"\r\n\r\n${expectedContent}\r\n--${boundary}--`
+      body: body,
+      isBase64Encoded: true
     })
     const image = await request.file(filename)
-    expect(image).to.equal(expectedContent.toString())
+    expect(image).to.eql(expectedContent)
   })
 
   it('Verifies request has key', (done) => {

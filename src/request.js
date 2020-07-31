@@ -15,9 +15,9 @@ class Request {
     try {
       if (this.isMultipartFormData) {
         this.busboy = new Busboy({
-        headers: {
-          'content-type': this.headers['Content-Type'] || this.headers['content-type']
-        }
+          headers: {
+            'content-type': this.headers['Content-Type'] || this.headers['content-type']
+          }
         })
       } else if (typeof this.event.body === 'string') {
         this.body = JSON.parse(this.event.body) || {}
@@ -168,7 +168,7 @@ class Request {
             }
           }
           file.on('data', (data) => {
-            this.files[fieldName].binary += data
+            this.files[fieldName].binary = Buffer.concat([this.files[fieldName].binary, data])
           })
           file.on('end', () => {})
         })
