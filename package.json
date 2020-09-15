@@ -19,12 +19,12 @@
     },
     "dependencies": {
         "@hapi/joi": "^17.1.1",
-        "aws-sdk": "^2.751.0",
         "busboy": "^0.3.1",
         "semver": "^7.3.2"
     },
     "devDependencies": {
         "@babel/core": "^7.10.5",
+        "aws-sdk": "^2.752.0",
         "babel-loader": "^8.1.0",
         "chai": "^4.1.2",
         "cross-env": "^5.2.0",

@@ -107,10 +107,11 @@ class Request {
       try {
         const identity = requestContext.identity || {}
         const authProvider = identity.cognitoAuthenticationProvider || {}
-        const poolId = authProvider.split(',')[0].split('/')[1] || {}
-        const username = authProvider.split('CognitoSignIn:')[1] || {}
-        user = await this._getUser(poolId, username)
-        return user
+        if (/^.*,[\w\.-]*\/(.*):.*:(.*)/.test(authProvider)) {
+          const [origin, userPoolId, userSub] = authProvider.match(/^.*,[\w\.-]*\/(.*):.*:(.*)/)
+          user = await this._getUser(userPoolId, userSub)
+          return user
+        }
       } catch (error) {
         return error
       }
@@ -167,11 +168,11 @@ class Request {
     }
   }
 
-  async _getUser(poolId, username) {
+  async _getUser(userPoolId, userSub) {
     try {
       const user = await cognitoIdentityServiceProvider.adminGetUser({
-        UserPoolId: poolId,
-        Username: username
+        UserPoolId: userPoolId,
+        Username: userSub
       }).promise()
       return Promise.resolve(user)
     } catch (error) {
