@@ -1,5 +1,9 @@
 const path = require('path')
 
+const externalModules = [
+    'aws-sdk'
+]
+
 module.exports = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     target: 'node',
@@ -9,6 +13,15 @@ module.exports = {
         filename: 'index.js',
         libraryTarget: 'commonjs2'
     },
+    externals: [
+        ...externalModules,
+        (context, request, callback) => {
+            if (/\.\/node_modules\/.*/.test(request)) {
+                return callback(null, 'commonjs ' + request)
+            }
+            return callback()
+        }
+    ],
     node: {
         __dirname: true,
         __filename: true
