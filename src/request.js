@@ -106,11 +106,11 @@ class Request {
     } else {
       try {
         const identity = requestContext.identity || {}
-        const authProvider = identity.cognitoAuthenticationProvider || {}
-        if (/^.*,[\w\.-]*\/(.*):.*:(.*)/.test(authProvider)) {
-          const [origin, userPoolId, userSub] = authProvider.match(/^.*,[\w\.-]*\/(.*):.*:(.*)/)
-          user = await this._getUser(userPoolId, userSub)
-          return user
+        let authProvider, userPoolId, userSub
+        authProvider = identity.cognitoAuthenticationProvider || {}
+        if (/^.*,[\w.-]*\/(.*):.*:(.*)/.test(authProvider)) {
+          [authProvider, userPoolId, userSub] = authProvider.match(/^.*,[\w.-]*\/(.*):.*:(.*)/)
+          return await this._getUser(userPoolId, userSub)
         }
       } catch (error) {
         return error
