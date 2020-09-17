@@ -86,8 +86,8 @@ class Request {
   }
   async user() {
     const requestContext = this.event.requestContext || {}
-    let user
     if (requestContext.authorizer) {
+      let user
       const authorizer = requestContext.authorizer || {}
       const claims = authorizer.claims || {}
       const identity = authorizer.identity || 'default'
