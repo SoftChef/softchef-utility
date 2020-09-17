@@ -84,7 +84,7 @@ class Request {
   header(key) {
     return this.event.headers[key] || null
   }
-  async user(attribute) {
+  async user() {
     const requestContext = this.event.requestContext || {}
     let user
     if (requestContext.authorizer) {
@@ -98,11 +98,7 @@ class Request {
       }
       user.identity = identity
       user.username = user['cognito:username'] || user.sub
-      if (attribute) {
-        return user[attribute] || null
-      } else {
-        return user
-      }
+      return user
     } else {
       try {
         const identity = requestContext.identity || {}
@@ -110,7 +106,10 @@ class Request {
         authProvider = identity.cognitoAuthenticationProvider || {}
         if (/^.*,[\w.-]*\/(.*):.*:(.*)/.test(authProvider)) {
           [authProvider, userPoolId, userSub] = authProvider.match(/^.*,[\w.-]*\/(.*):.*:(.*)/)
-          return await this._getUser(userPoolId, userSub)
+          return await cognitoIdentityServiceProvider.adminGetUser({
+            UserPoolId: userPoolId,
+            Username: userSub
+          }).promise()
         }
       } catch (error) {
         return error
@@ -165,18 +164,6 @@ class Request {
         errors[detail.context.key] = detail.message
       }
       return Promise.reject(errors)
-    }
-  }
-
-  async _getUser(userPoolId, userSub) {
-    try {
-      const user = await cognitoIdentityServiceProvider.adminGetUser({
-        UserPoolId: userPoolId,
-        Username: userSub
-      }).promise()
-      return Promise.resolve(user)
-    } catch (error) {
-      return Promise.reject(error)
     }
   }
 
