@@ -14,13 +14,7 @@ module.exports = {
         libraryTarget: 'commonjs2'
     },
     externals: [
-        ...externalModules,
-        (context, request, callback) => {
-            if (/\.\/node_modules\/.*/.test(request)) {
-                return callback(null, 'commonjs ' + request)
-            }
-            return callback()
-        }
+        ...externalModules
     ],
     node: {
         __dirname: true,
