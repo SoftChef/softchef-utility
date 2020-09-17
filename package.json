@@ -1,7 +1,7 @@
 {
     "name": "softchef-utility",
     "main": "dists/index.js",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "",
     "repository": {
         "type": "git",
@@ -24,6 +24,7 @@
     },
     "devDependencies": {
         "@babel/core": "^7.10.5",
+        "aws-sdk": "^2.752.0",
         "babel-loader": "^8.1.0",
         "chai": "^4.1.2",
         "cross-env": "^5.2.0",

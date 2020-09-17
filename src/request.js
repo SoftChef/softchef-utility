@@ -1,7 +1,9 @@
 'use strict'
 
+const AWS = require('aws-sdk')
 const Busboy = require('busboy')
 const Joi = require('./validator')
+const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider()
 
 class Request {
   constructor(event) {
@@ -82,23 +84,36 @@ class Request {
   header(key) {
     return this.event.headers[key] || null
   }
-  user(attribute) {
+  async user() {
     const requestContext = this.event.requestContext || {}
-    const authorizer = requestContext.authorizer || {}
-    const claims = authorizer.claims || {}
-    const identity = authorizer.identity || 'default'
-    let user
-    if (typeof claims === 'string') {
-      user = JSON.parse(claims)
-    } else {
-      user = claims
-    }
-    user.identity = identity
-    user.username = user['cognito:username'] || user.sub
-    if (attribute) {
-      return user[attribute] || null
-    } else {
+    if (requestContext.authorizer) {
+      let user
+      const authorizer = requestContext.authorizer || {}
+      const claims = authorizer.claims || {}
+      const identity = authorizer.identity || 'default'
+      if (typeof claims === 'string') {
+        user = JSON.parse(claims)
+      } else {
+        user = claims
+      }
+      user.identity = identity
+      user.username = user['cognito:username'] || user.sub
       return user
+    } else {
+      try {
+        const identity = requestContext.identity || {}
+        let authProvider, userPoolId, userSub
+        authProvider = identity.cognitoAuthenticationProvider || {}
+        if (/^.*,[\w.-]*\/(.*):.*:(.*)/.test(authProvider)) {
+          [authProvider, userPoolId, userSub] = authProvider.match(/^.*,[\w.-]*\/(.*):.*:(.*)/)
+          return await cognitoIdentityServiceProvider.adminGetUser({
+            UserPoolId: userPoolId,
+            Username: userSub
+          }).promise()
+        }
+      } catch (error) {
+        return error
+      }
     }
   }
 
