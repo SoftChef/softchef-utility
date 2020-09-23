@@ -111,14 +111,14 @@ class Request {
             Username: userSub
           }).promise()
           const attributes = {}
-          for (let attribute of user.UserAttributes) {
+          for (const attribute of user.UserAttributes) {
             attributes[attribute.Name] = attribute.Value
           }
           return {
             enabled: user.Enabled || null,
-            userCreateDate: user.UserCreateDate || null,
-            userLastModifiedDate: user.UserLastModifiedDate || null,
-            userstatus: user.UserStatus || null,
+            createdAt: user.UserCreateDate || null,
+            updatedAt: user.UserLastModifiedDate || null,
+            status: user.UserStatus || null,
             username: user.Username || null,
             ...attributes
           }
