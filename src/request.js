@@ -118,7 +118,7 @@ class Request {
             enabled: user.Enabled || null,
             userCreateDate: user.UserCreateDate || null,
             userLastModifiedDate: user.UserLastModifiedDate || null,
-            userstatus: user.Userstatus || null,
+            userstatus: user.UserStatus || null,
             username: user.Username || null,
             ...attributes
           }
