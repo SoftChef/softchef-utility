@@ -106,10 +106,18 @@ class Request {
         authProvider = identity.cognitoAuthenticationProvider || {}
         if (/^.*,[\w.-]*\/(.*):.*:(.*)/.test(authProvider)) {
           [authProvider, userPoolId, userSub] = authProvider.match(/^.*,[\w.-]*\/(.*):.*:(.*)/)
-          return await cognitoIdentityServiceProvider.adminGetUser({
+          let user = await cognitoIdentityServiceProvider.adminGetUser({
             UserPoolId: userPoolId,
             Username: userSub
           }).promise()
+          return {
+            enabled = user.Enabled || null,
+            userCreateDate = user.UserCreateDate || null,
+            userLastModifiedDate = user.UserLastModifiedDate || null,
+            userstatus = user.Userstatus || null,
+            username = user.Username || null,
+            ...user.UserAttributes || null
+          }
         }
       } catch (error) {
         return error
