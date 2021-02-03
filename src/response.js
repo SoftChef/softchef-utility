@@ -39,6 +39,8 @@ class Response {
       headers['Access-Control-Allow-Origin'] = '*'
       headers['Access-Control-Allow-Headers'] = JSON.stringify([
         'Content-Type',
+        'Fetch-Mode',
+        'accept',
         'X-Amz-Date',
         'Accept-Encoding',
         'Authorization',
