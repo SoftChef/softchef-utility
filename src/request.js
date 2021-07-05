@@ -162,7 +162,7 @@ class Request {
       const schema = Joi.object().keys(keys)
       const validated = await schema.validateAsync(
         this.inputs(
-            Object.keys(keys)
+          Object.keys(keys)
         ),
         {
           abortEarly: false,
