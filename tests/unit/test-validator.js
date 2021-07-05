@@ -45,4 +45,15 @@ describe('Test Validator class', () => {
     expect(result.error).to.not.an('null')
     done()
   })
+
+  it('Verifies validate date format success', (done) => {
+    const expectedData = {
+      date: '2019-01-01'
+    }
+    const result = Joi.object().keys({
+      date: Joi.date().format('YYYY-MM-DD').raw().required()
+    }).validate(expectedData)
+    expect(result.value).to.eql(expectedData)
+    done()
+  })
 })

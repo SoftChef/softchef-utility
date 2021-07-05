@@ -1,6 +1,7 @@
 'use strict'
 
 const Joi = require('@hapi/joi')
+const JoiDate = require('@hapi/joi-date')
 const semver = require('semver')
 
 const ALLOW_AWS_REGIONS = [
@@ -43,6 +44,7 @@ module.exports = Joi
       }
     }
   })
+  .extend(JoiDate)
 
 // You can extend Joi after extend()
 // example: Joi.extend(...).extend(...).extend(...)
