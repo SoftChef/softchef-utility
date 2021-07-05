@@ -1,7 +1,7 @@
 {
     "name": "softchef-utility",
     "main": "dists/index.js",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "description": "",
     "repository": {
         "type": "git",
